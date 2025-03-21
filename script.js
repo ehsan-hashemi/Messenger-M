@@ -9,17 +9,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const phoneNumberInput = document.getElementById('phoneNumber');
     const receiverPhoneNumberInput = document.getElementById('receiverPhoneNumber');
   
-    // ثبت شماره تلفن و ورود به بخش چت
+    let userPhoneNumber = null;
+  
+    // ثبت‌نام کاربر
     registerButton.addEventListener('click', () => {
       const phoneNumber = phoneNumberInput.value.trim();
       if (phoneNumber) {
+        userPhoneNumber = phoneNumber;
         loginSection.style.display = 'none';
         chatSection.style.display = 'block';
-        alert(`ثبت نام شما با شماره ${phoneNumber} انجام شد!`);
+        alert(`ثبت‌نام شما با شماره ${phoneNumber} انجام شد!`);
       }
     });
   
-    // قابلیت تغییر تم
+    // تغییر تم
     themeToggle.addEventListener('click', () => {
       document.body.dataset.theme = document.body.dataset.theme === 'dark' ? '' : 'dark';
     });
@@ -29,11 +32,37 @@ document.addEventListener('DOMContentLoaded', () => {
       const receiverPhoneNumber = receiverPhoneNumberInput.value.trim();
       const messageText = messageInput.value.trim();
       if (receiverPhoneNumber && messageText) {
-        const messageElement = document.createElement('li');
-        messageElement.textContent = `به ${receiverPhoneNumber}: ${messageText}`;
-        messagesList.appendChild(messageElement);
-        messageInput.value = ''; // پاک کردن فیلد پیام
+        const message = {
+          sender: userPhoneNumber,
+          receiver: receiverPhoneNumber,
+          content: messageText,
+          timestamp: new Date(),
+        };
+  
+        // ذخیره پیام در Local Storage
+        const messages = JSON.parse(localStorage.getItem('messages')) || [];
+        messages.push(message);
+        localStorage.setItem('messages', JSON.stringify(messages));
+  
+        // نمایش پیام در رابط کاربری
+        displayMessage(message);
+        messageInput.value = '';
       }
     });
+  
+    // نمایش پیام‌ها در رابط کاربری
+    function displayMessage(message) {
+      const messageElement = document.createElement('li');
+      messageElement.textContent = `از ${message.sender} به ${message.receiver}: ${message.content}`;
+      messagesList.appendChild(messageElement);
+    }
+  
+    // بارگذاری پیام‌ها از Local Storage
+    function loadMessages() {
+      const messages = JSON.parse(localStorage.getItem('messages')) || [];
+      messages.forEach(displayMessage);
+    }
+  
+    loadMessages();
   });
   
