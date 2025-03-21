@@ -66,3 +66,20 @@ document.addEventListener('DOMContentLoaded', () => {
     loadMessages();
   });
   
+  const SERVER_URL = 'https://your-server-url.com';
+
+// ارسال پیام به سرور
+async function sendMessage(sender, receiver, content) {
+  await fetch(`${SERVER_URL}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sender, receiver, content }),
+  });
+}
+
+// دریافت پیام‌ها از سرور
+async function loadMessages(phoneNumber) {
+  const response = await fetch(`${SERVER_URL}/messages/${phoneNumber}`);
+  const messages = await response.json();
+  console.log(messages);
+}
